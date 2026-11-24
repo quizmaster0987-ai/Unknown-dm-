@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#100d1d"><meta name="description" content="UNKNOWN DM — an interactive mystery chat game">
+<link rel="manifest" href="manifest.json">
+<title>UNKNOWN DM</title>
+<style>
+:root{--bg:#100d1d;--panel:#1b172b;--panel2:#262039;--purple:#a879ff;--pink:#e7a4ef;--muted:#a59bb8;--line:#39314c;--white:#f7f2ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#382453 0%,var(--bg) 55%);color:var(--white);font:15px Inter,system-ui,-apple-system,sans-serif;min-height:100dvh}
+button{font:inherit;color:inherit;cursor:pointer} .app{max-width:520px;margin:auto;min-height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;justify-content:space-between;padding:17px 4px 13px;border-bottom:1px solid #ffffff12}
+.brand{font-weight:900;letter-spacing:3px;font-size:16px}.brand span{color:var(--purple)}.chapter{font-size:11px;color:var(--muted);letter-spacing:1px}
+.screen{display:none;flex:1}.screen.active{display:flex;flex-direction:column}
+.hero{padding:34px 8px 20px;text-align:center}.orb{width:92px;height:92px;margin:0 auto 20px;border-radius:30px;background:linear-gradient(145deg,#6d48a6,#241a3c);display:grid;place-items:center;box-shadow:0 12px 50px #9c64ff33;font-size:39px;border:1px solid #c6a3ff55}.hero h1{font-size:34px;letter-spacing:4px;margin:0}.hero p{color:var(--muted);line-height:1.6;margin:10px auto;max-width:310px}
+.primary,.secondary{border:0;border-radius:15px;padding:15px 18px;font-weight:750}.primary{background:linear-gradient(110deg,#9863ed,#c17de8);color:#160f23;box-shadow:0 8px 25px #a879ff35}.secondary{background:var(--panel2);border:1px solid var(--line)}
+.menu{display:grid;gap:10px;margin:12px 4px}.menu button{text-align:left;padding:16px;border-radius:16px;background:#1c172b;border:1px solid var(--line)}.menu b{display:block;margin-bottom:4px}.menu small{color:var(--muted)}
+.chathead{display:flex;align-items:center;gap:12px;padding:17px 3px;border-bottom:1px solid var(--line)}.avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#7651a8,#29203c);display:grid;place-items:center;font-size:20px}.status{font-size:12px;color:#8de0b2}.chatlog{flex:1;overflow:auto;padding:18px 2px;display:flex;flex-direction:column;gap:12px;min-height:300px}.bubble{max-width:84%;padding:13px 15px;border-radius:17px;line-height:1.45;white-space:pre-wrap;animation:pop .2s ease}.them{align-self:flex-start;background:#282239;border:1px solid #ffffff0c;border-bottom-left-radius:5px}.me{align-self:flex-end;background:linear-gradient(135deg,#7651a8,#563a80);border-bottom-right-radius:5px}.time{font-size:10px;color:#a99db9;margin-top:5px}.typing{font-size:12px;color:var(--muted);padding:4px 8px}
+.choices{display:grid;gap:9px;padding:10px 0 18px}.choice{background:#201a30;border:1px solid #514267;border-radius:14px;text-align:left;padding:14px}.choice:active{transform:scale(.985);background:#332747}.clue{border:1px solid #6a5485;background:linear-gradient(135deg,#2d2340,#191525);padding:15px;border-radius:16px;margin:5px 0}.clue .photo{height:125px;border-radius:12px;background:linear-gradient(145deg,#44324e,#171320);display:grid;place-items:center;font-size:48px;margin-bottom:10px}.footer{font-size:11px;color:#81768f;text-align:center;padding:12px}
+.toprow{display:flex;justify-content:space-between;align-items:center;margin:12px 2px;color:var(--muted);font-size:12px}.pill{border:1px solid var(--line);border-radius:30px;padding:7px 10px}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#34264a;padding:11px 16px;border-radius:30px;display:none}
+@keyframes pop{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@media(min-width:600px){body{padding:22px 0}.app{min-height:calc(100dvh - 44px);border:1px solid #ffffff14;border-radius:26px;overflow:hidden;background:#100d1d}}
+</style></head>
+<body><main class="app">
+<header><div class="brand">UNKNOWN <span>DM</span></div><div class="chapter" id="chapter">CHAPTER 01 · THE PHOTO</div></header>
+<section class="screen active" id="home">
+ <div class="hero"><div class="orb">✉</div><h1>UNKNOWN DM</h1><p>One message. Five strangers. A secret hidden in an old photograph.</p><button class="primary" id="start">START MYSTERY →</button></div>
+ <div class="menu"><button id="continue"><b>▶ Continue story</b><small>Pick up where you left off</small></button><button id="cluesBtn"><b>▣ Evidence locker</b><small>Review clues you have discovered</small></button></div><div class="footer">A fictional interactive mystery · Your choices shape the story</div>
+</section>
+<section class="screen" id="game">
+ <div class="chathead"><div class="avatar">?</div><div style="flex:1"><b>Unknown User</b><div class="status">● Connected</div></div><span class="pill" id="trust">TRUST 0</span></div>
+ <div class="toprow"><span id="scene">NEW MESSAGE</span><span id="progress">CLUE 0/3</span></div>
+ <div class="chatlog" id="chatlog" aria-live="polite"></div><div class="choices" id="choices"></div>
+</section>
+<section class="screen" id="evidence"><div style="padding:24px 4px"><h2>Evidence locker</h2><p style="color:var(--muted)">Clues discovered during your investigation.</p><div id="cluelist"></div><button class="secondary" id="back" style="width:100%;margin-top:15px">← Back to story</button></div></section>
+<div class="toast" id="toast"></div></main>
+<script>
+const $=id=>document.getElementById(id);let state=JSON.parse(localStorage.getItem('unknownDM')||'null')||{step:0,trust:0,clues:[]};
+const steps=[
+{from:"UNKNOWN",text:"Hey. Are you awake?",choices:[["Who is this?",1],["How did you get my number?",0],["I'm listening.",2]]},
+{from:"UNKNOWN",text:"You really don't remember? The old photograph. The one with five people.",choices:[["What secret?",2],["Where did you get that photo?",1],["Tell me your name first.",0]]},
+{from:"UNKNOWN",text:"Look carefully at the person standing in the background. There's something you haven't noticed.",clue:"A faded photograph showing five people outside an old observatory. A small silver star is drawn on the back.",choices:[["Who are these five people?",2],["Zoom in on the background.",1],["Why are you sending this to me?",0]]},
+{from:"UNKNOWN",text:"The person at the back is holding something. A key. And the symbol on it matches a place called the Blue Room.",clue:"The Blue Room: a location written in the margin of the photograph. The silver-star symbol appears beside it.",choices:[["Where is the Blue Room?",2],["What does the key open?",1],["I don't trust you yet.",0]]},
+{from:"UNKNOWN",text:"Before you go there, check the date written on the photo. It is tomorrow's date... but the photograph is twenty years old.",clue:"The date on the photograph appears to be tomorrow's date, despite the image being decades old.",choices:[["This makes no sense. Explain.",1],["Who took the photograph?",2],["I'm going to investigate the Blue Room.",0]]},
+{from:"UNKNOWN",text:"Good. You found the first three clues. But there is one thing I haven't told you: I was in that photograph too.",ending:true,choices:[["Ask them to reveal their identity.",2],["End the conversation for now.",0],["Review all the clues.",1]]}
+];
+function save(){localStorage.setItem('unknownDM',JSON.stringify(state));$('trust').textContent='TRUST '+state.trust;$('progress').textContent='CLUE '+state.clues.length+'/3'}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active')}
+function bubble(txt,who='them'){let d=document.createElement('div');d.className='bubble '+who;d.textContent=txt;$('chatlog').append(d);$('chatlog').scrollTop=$('chatlog').scrollHeight}
+function render(){show('game');$('chapter').textContent='CHAPTER 01 · THE PHOTO';$('chatlog').innerHTML='';$('choices').innerHTML='';let s=steps[Math.min(state.step,steps.length-1)];$('scene').textContent='MESSAGE '+String(state.step+1).padStart(2,'0');bubble(s.text);if(s.clue&&!state.clues.includes(s.clue)){state.clues.push(s.clue);save();toast('New clue added to evidence locker');}
+s.choices.forEach(([label,points])=>{let b=document.createElement('button');b.className='choice';b.textContent=label;b.onclick=()=>choose(label,points,s.ending);$('choices').append(b)});save()}
+function choose(label,points,ending){bubble(label,'me');state.trust+=points;if(ending){let answer=label.includes('reveal')?'UNKNOWN: My name is Alex. I was the child standing behind everyone. I need your help finding out why that photo exists.':'UNKNOWN: Take your time. The clues will be here when you return.';setTimeout(()=>bubble(answer),250);$('choices').innerHTML='<button class="choice" onclick="restart()">↻ Replay chapter</button><button class="choice" onclick="openEvidence()">▣ Review evidence</button>';save();return}state.step=Math.min(state.step+1,steps.length-1);save();setTimeout(render,350)}
+function toast(t){$('toast').textContent=t;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',1800)}
+function restart(){state={step:0,trust:0,clues:[]};save();render()}
+function openEvidence(){show('evidence');$('cluelist').innerHTML=state.clues.length?state.clues.map((c,i)=>'<div class="clue"><b>CLUE '+(i+1)+'</b><p>'+c+'</p></div>').join(''):'<div class="clue">No clues yet. Start the mystery to discover evidence.</div>'}
+$('start').onclick=restart;$('continue').onclick=render;$('cluesBtn').onclick=openEvidence;$('back').onclick=render;
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script></body></html>
